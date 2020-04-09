@@ -1,78 +1,91 @@
 <template>
-  <v-expansion-panel>
-    <v-expansion-panel-header class="headline" hide-actions
->
-      <div>
-        <v-avatar color="black" size="30" style="position:absolute;left:-25px">
-          <span class="white--text subtitle-1">4</span>
-        </v-avatar>Payment
-      </div>
-    </v-expansion-panel-header>
-    <v-expansion-panel-content>
-      <div v-if="guestSignIn">
-        <p>Checking out as a <strong>Guest</strong>? You'll be able to save your details to create an account with us
-          later.</p>
-      </div>
-      <div v-else>
-        <p>Don't have an account? <a :href="store_config.links.createAccountLink">Create an account</a> to continue.</p>
-      </div>
-      <form @submit.prevent="signIn()">
-        <div class="d-flex align-center">
-          <v-text-field v-model="email" :error-messages="emailErrors" label="E-mail" required @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"></v-text-field>
-
-          <v-btn v-if="guestSignIn" class="ml-4" type="submit">Continue as Guest</v-btn>
-        </div>
-        <div v-if="!guestSignIn">
-          <v-text-field v-model="password" label="Password" :required="!guestSignIn"></v-text-field>
-          <a class="d-block" :href="store_config.links.forgotPasswordLink">Forgot password?</a>
-          <v-btn class="mr-4" type="submit">Sign In</v-btn>
-          <v-btn @click="guestSignIn = true">Cancel</v-btn>
-        </div>
-        <v-checkbox v-model="newsletter" label="Sign up for newsletter"></v-checkbox>
-      </form>
-      <p v-if="guestSignIn">Already Have an account? <a @click="guestSignIn = false" text link>Sign In Now</a></p>
-
-
-    </v-expansion-panel-content>
-    <v-divider></v-divider>
-  </v-expansion-panel>
+	<v-expansion-panel>
+		<PanelHeader :panelInfo="panelInfo" />
+		<v-expansion-panel-content>
+			<v-radio-group
+				v-if="paymentOptions.length"
+				v-model="paymentMethod"
+				:loading="isLoading"
+				label="Payment Method"
+			>
+				<v-list>
+					<div v-for="(option, index) of paymentOptions" :key="option.id">
+						<v-divider></v-divider>
+						<v-list-item ripple="{ center: true }" dense>
+							<v-list-item-content>
+								<v-radio :label="option.config.displayName" :value="option.id"></v-radio>
+							</v-list-item-content>
+							<div class="d-flex">
+								<div v-for="(card, cardIndex) of option.supportedCards" :key="cardIndex">{{card}}</div>
+							</div>
+						</v-list-item>
+						<CreditCard
+							v-if="option.method === 'credit-card' || option.method === 'zzzblackhole'"
+							v-show="paymentMethod === option.id"
+						/>
+						<v-divider v-if="index === paymentOptions.length - 1"></v-divider>
+					</div>
+				</v-list>
+			</v-radio-group>
+			<v-btn color="primary" @click="submitOrder">Place Order</v-btn>
+		</v-expansion-panel-content>
+	</v-expansion-panel>
 </template>
 
 <script>
-  import {
-    email,
-    required
-  } from 'vuelidate/lib/validators'
+import CreditCard from './CreditCard.vue'
+import PanelHeader from './PanelHeader.vue'
 
-  export default {
-    name: 'PaymentPanel',
-    props: ['service', 'checkout', 'store_config'],
-    data: () => ({
-      guestSignIn: true,
-      email: '',
-      password: '',
-      newsletter: ''
-    }),
-    validations: {
-      email: {
-        required,
-        email
-      }
-    },
-    computed: {
-      emailErrors() {
-        const errors = []
-        if (!this.$v.email.$dirty) {
-          return errors
-        }
-        // !this.$v.email.email && errors.push('Must be valid e-mail') 
-        // !this.$v.email.required && errors.push('E-mail is required')
-        // return errors
-      },
-    },
-    methods: {
+export default {
+	name: 'PaymentPanel',
+	props: ['service', 'checkout', 'store_config', 'panel'],
+	components: {
+		CreditCard,
+		PanelHeader
+	},
+	data: () => ({
+		isLoading: false,
+		panelInfo: {
+			title: 'Payment',
+			step: 3,
+			currentStep: 3
+		},
+		paymentMethod: '',
+		paymentOptions: [],
+		paymentData: {
+			ccExpiry: { month: 10, year: 20 },
+			ccName: 'BigCommerce',
+			ccNumber: '4111111111111111',
+			ccType: 'visa',
+			ccCvv: 123
+		}
+	}),
+	async mounted() {
+		this.isLoading = true
+		const state = await this.service.loadPaymentMethods()
+		this.paymentOptions = state.data.getPaymentMethods()
+		this.panelInfo.currentStep = this.panel
+	},
+	methods: {
+		async submitOrder() {
+			await this.service.initializePayment({ methodId: this.paymentMethod })
+			const payment = {
+				methodId: 'braintree',
+				paymentData: {
+					ccExpiry: { month: 10, year: 20 },
+					ccName: 'BigCommerce',
+					ccNumber: '4111111111111111',
+					ccType: 'visa',
+					ccCvv: 123
+				}
+			}
 
-    }
-  }
+			const state = await this.service.submitOrder({ payment })
+
+			console.log(state.getOrder())
+
+			// window.location.assign('/order-confirmation')
+		}
+	}
+}
 </script>

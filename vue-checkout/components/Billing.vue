@@ -8,8 +8,8 @@
 			</div>
 		</v-expansion-panel-header>
 		<v-expansion-panel-content>
-			<form v-if="store_config.formFields" @submit.prevent="submitShipping()">
-				<div v-for="field of store_config.formFields.shippingAddressFields" :key="field.id">
+			<form v-if="store_config.formFields" @submit.prevent="submitBilling()">
+				<div v-for="field of store_config.formFields.billingAddressFields" :key="field.id">
 					<v-text-field
 						v-if="field.name !== 'countryCode' && field.name !== 'stateOrProvince' "
 						v-model="email"
@@ -30,15 +30,7 @@
 					></v-select>
 				</div>
 				<v-btn class="mr-4" type="submit">Continue</v-btn>
-				<v-checkbox v-model="billingSame" label="My Billing address is the same as my Shipping address"></v-checkbox>
 			</form>
-			<v-textarea
-				v-model="comments"
-				v-if="store_config.checkoutSettings.enableOrderComments"
-				name="comments"
-				label="Order Comments"
-				hint="Enter text here..."
-			></v-textarea>
 		</v-expansion-panel-content>
 		<v-divider></v-divider>
 	</v-expansion-panel>

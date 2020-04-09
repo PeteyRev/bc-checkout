@@ -40,6 +40,21 @@ blog:
         {{> components/products/new products=products.new columns=theme_settings.homepage_new_products_column_count}}
     {{/if}}
     {{{region name="home_below_new_products"}}}
+
+    <div class="homepage-blogs__margin-container">
+        <div class="homepage-blogs">
+            <h2>The Latest in Lighting</h2>
+            <div class="homepage-blogs-grid">
+  
+                {{#each blog.recent_posts}}
+                    {{> components/blog/post post=this}}
+                {{/each}}
+            </div>
+            <div class="center-buttons">
+                <a href="/blogs" class="button button--secondary">Read More</a>
+            </div>
+        </div>
+      </div>
 </div>
 {{/partial}}
 {{> layout/base}}

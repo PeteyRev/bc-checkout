@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import vuetify from './plugins/vuetify'
-import './plugins/vuelidate'
+import './filters/currency'
 import App from './App.vue'
 import PageManager from '../assets/js/theme/page-manager'
 
