@@ -2,7 +2,29 @@
 	<v-expansion-panel>
 		<PanelHeader :panelInfo="panelInfo" />
 		<v-expansion-panel-content>
-			<v-form ref="form" class="d-flex flex-wrap justify-space-between">
+			<div v-if="store_config.checkoutSettings.hasMultiShippingEnabled && !checkout.customer.isGuest">
+				<a class="d-inline-block mb-8" @click="toggleMultipleAddresss">Ship to multiple addresses</a>
+				<div v-if="multipleAddresses && checkout.customer.addresses.length">
+					<v-slide-group
+						:show-arrows="checkout.customer.addresses.length > 3"
+						class="pa-6"
+						center-active
+					>
+						<v-slide-item v-for="(address,index) of checkout.customer.addresses" :key="index">
+							<v-card class="ma-4" width="300">
+								<v-list-item three-line>
+									<v-list-item-content>
+										<v-list-item-title>{{address.firstName}} {{address.lastName}}</v-list-item-title>
+										<v-list-item-title>{{address.company}} {{address.phone}}</v-list-item-title>
+										<v-list-item-title>{{address.city}},{{address.stateOrProvince}},{{address.postalCode}}/ {{address.country}}</v-list-item-title>
+									</v-list-item-content>
+								</v-list-item>
+							</v-card>
+						</v-slide-item>
+					</v-slide-group>
+				</div>
+			</div>
+			<v-form v-if="!multipleAddresses" ref="form" class="d-flex flex-wrap justify-space-between">
 				<div v-for="(field, index) of fields" :key="index" :class="field.name">
 					<v-text-field
 						v-if="field.name !== 'countryCode' && field.name !== 'stateOrProvince' "
@@ -65,7 +87,7 @@
 
 			<v-textarea
 				v-if="store_config.checkoutSettings.enableOrderComments"
-				v-model="address.comments"
+				v-model="customerMessage"
 				name="comments"
 				label="Order Comments"
 				placeholder="Enter message here..."
@@ -73,11 +95,7 @@
 				class="mt-7"
 				height="100"
 			></v-textarea>
-			<v-btn
-				color="primary"
-				:disabled="!selectedShipping"
-				@click="billingSame ? $emit('panelChange', 3) : $emit('panelChange', 2)"
-			>Continue</v-btn>
+			<v-btn color="primary" :disabled="!selectedShipping" @click="submitShippingStep">Continue</v-btn>
 		</v-expansion-panel-content>
 		<v-divider></v-divider>
 	</v-expansion-panel>
@@ -94,26 +112,28 @@ export default {
 	data: () => ({
 		panelInfo: {
 			title: 'Shipping',
-			step: 1,
-			currentStep: 0
+			step: 1
 		},
 		billingSame: true,
 		isLoading: false,
 		fields: [],
 		countries: [],
 		states: [],
-		address: {
-			comments: ''
-		},
+		customerMessage: '',
+		address: {},
 		shippingOptions: [],
-		selectedShipping: null
+		selectedShipping: null,
+		multipleAddresses: false
 	}),
 	async created() {
 		await this.getFormData()
+
 		if (this.checkout.consignments.length) {
+			const state = await this.service.loadShippingOptions()
+			this.shippingOptions = state.data.getShippingOptions()
 			this.address = this.checkout.consignments[0].shippingAddress
+			this.selectedShipping = this.checkout.consignments[0].selectedShippingOption.id
 		}
-		this.panelInfo.currentStep = this.panel
 	},
 	methods: {
 		async getFormData() {
@@ -130,6 +150,7 @@ export default {
 			try {
 				await this.service.updateShippingAddress(this.address)
 				await this.service.updateBillingAddress(this.address)
+
 				const state = await this.service.loadShippingOptions()
 				this.shippingOptions = state.data.getShippingOptions()
 			} catch (err) {
@@ -141,13 +162,29 @@ export default {
 			this.states = this.countries.filter(i => i.code === e)[0].subdivisions
 		},
 		validateForm() {
-			console.log(this.$refs.form.validate())
 			if (this.$refs.form.validate()) {
 				this.loadShippingOptions()
 			}
 		},
 		async submitShipping() {
-			const state = await this.service.selectShippingOption(this.selectedShipping)
+			try {
+				const state = await this.service.selectShippingOption(this.selectedShipping)
+			} catch (err) {
+				console.log(err)
+			}
+		},
+		async submitShippingStep() {
+			await this.service.updateCheckout({ customerMessage: this.customerMessage })
+			if (this.billingSame) {
+				this.$store.dispatch('setPanel', 3)
+			} else {
+				this.$store.dispatch('setPanel', 2)
+			}
+		},
+		async toggleMultipleAddresss() {
+			this.multipleAddresses = !this.multipleAddresses
+			if (this.multipleAddresses) {
+			}
 		}
 	}
 }

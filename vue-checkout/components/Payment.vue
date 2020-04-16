@@ -7,27 +7,34 @@
 				v-model="paymentMethod"
 				:loading="isLoading"
 				label="Payment Method"
+				required
 			>
-				<v-list>
+				<v-list elevation>
 					<div v-for="(option, index) of paymentOptions" :key="option.id">
 						<v-divider></v-divider>
-						<v-list-item ripple="{ center: true }" dense>
+						<v-list-item ripple="{ center: true }">
 							<v-list-item-content>
 								<v-radio :label="option.config.displayName" :value="option.id"></v-radio>
 							</v-list-item-content>
 							<div class="d-flex">
-								<div v-for="(card, cardIndex) of option.supportedCards" :key="cardIndex">{{card}}</div>
+								<component
+									v-for="(card, cardIndex) of option.supportedCards"
+									class="card-icon"
+									:key="cardIndex"
+									:is="card"
+								/>
 							</div>
+
 						</v-list-item>
-						<CreditCard
-							v-if="option.method === 'credit-card' || option.method === 'zzzblackhole'"
-							v-show="paymentMethod === option.id"
-						/>
+							<CreditCard
+								v-if="option.method === 'credit-card' || option.method === 'zzzblackhole'"
+								v-show="paymentMethod === option.id"
+							/>
 						<v-divider v-if="index === paymentOptions.length - 1"></v-divider>
 					</div>
 				</v-list>
 			</v-radio-group>
-			<v-btn color="primary" @click="submitOrder">Place Order</v-btn>
+			<v-btn color="primary" block large :disabled="!paymentMethod" @click="submitOrder">Place Order</v-btn>
 		</v-expansion-panel-content>
 	</v-expansion-panel>
 </template>
@@ -35,25 +42,35 @@
 <script>
 import CreditCard from './CreditCard.vue'
 import PanelHeader from './PanelHeader.vue'
+import VISA from '../icons/VISA.svg'
+import MC from '../icons/MC.svg'
+import AMEX from '../icons/AMEX.svg'
+import DISCOVER from '../icons/DISCOVER.svg'
+import JCB from '../icons/JCB.svg'
+import DINERS from '../icons/DINERS.svg'
 
 export default {
 	name: 'PaymentPanel',
-	props: ['service', 'checkout', 'store_config', 'panel'],
+	props: ['service', 'checkout', 'store_config'],
 	components: {
 		CreditCard,
-		PanelHeader
+		PanelHeader,
+		VISA,
+		AMEX,
+		DISCOVER,
+		JCB,
+		DINERS
 	},
 	data: () => ({
 		isLoading: false,
 		panelInfo: {
 			title: 'Payment',
-			step: 3,
-			currentStep: 3
+			step: 3
 		},
-		paymentMethod: '',
+		paymentMethod: null,
 		paymentOptions: [],
 		paymentData: {
-			ccExpiry: { month: 10, year: 20 },
+			ccExpiry: { month: 10, year: 2022 },
 			ccName: 'BigCommerce',
 			ccNumber: '4111111111111111',
 			ccType: 'visa',
@@ -64,28 +81,29 @@ export default {
 		this.isLoading = true
 		const state = await this.service.loadPaymentMethods()
 		this.paymentOptions = state.data.getPaymentMethods()
-		this.panelInfo.currentStep = this.panel
 	},
 	methods: {
 		async submitOrder() {
 			await this.service.initializePayment({ methodId: this.paymentMethod })
 			const payment = {
-				methodId: 'braintree',
-				paymentData: {
-					ccExpiry: { month: 10, year: 20 },
-					ccName: 'BigCommerce',
-					ccNumber: '4111111111111111',
-					ccType: 'visa',
-					ccCvv: 123
-				}
+				methodId: this.paymentMethod,
+				paymentData: this.paymentData
 			}
-
 			const state = await this.service.submitOrder({ payment })
 
-			console.log(state.getOrder())
+			console.log(state.data.getOrder())
 
-			// window.location.assign('/order-confirmation')
+			window.location.assign('/order-confirmation')
 		}
 	}
 }
 </script>
+
+
+
+<style lang="scss">
+svg {
+	width: 50px;
+	height: 38px;
+}
+</style>
