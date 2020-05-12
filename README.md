@@ -116,11 +116,11 @@ them together, to be inlined on the top of the theme, via an ajax call managed
 by svg-injector. Each icon can then be called in a similar way to an inline image via:
 
 ```
-<svg><use xlink:href="#icon-svgFileName" /></svg>
+<svg><use href="#icon-svgFileName" /></svg>
 ```
 
 The ID of the SVG icon you are calling is based on the filename of the icon you want,
-with `icon-` prepended. e.g. `xlink:href="#icon-facebook"`.
+with `icon-` prepended. e.g. `href="#icon-facebook"`.
 
 Simply add your new icon SVG file to the icons folder, and run `grunt svgstore`,
 or just `grunt`.

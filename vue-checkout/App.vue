@@ -8,26 +8,10 @@
 							<v-row no-gutters>
 								<v-col cols="12" lg="10">
 									<v-expansion-panels flat tile accordion readonly v-model="panel">
-										<Customer
-											:service="service"
-											:checkout="checkout"
-											:store_config="store_config"
-										/>
-										<Shipping
-											:service="service"
-											:checkout="checkout"
-											:store_config="store_config"
-										/>
-										<Billing
-											:service="service"
-											:checkout="checkout"
-											:store_config="store_config"
-										/>
-										<Payment
-											:service="service"
-											:checkout="checkout"
-											:store_config="store_config"
-										/>
+										<Customer :service="service" :checkout="checkout" :store_config="store_config" />
+										<Shipping :service="service" :checkout="checkout" :store_config="store_config" />
+										<Billing :service="service" :checkout="checkout" :store_config="store_config" />
+										<Payment :service="service" :checkout="checkout" :store_config="store_config" />
 									</v-expansion-panels>
 								</v-col>
 							</v-row>
@@ -80,26 +64,21 @@ export default {
 				const state = await this.service.loadCheckout(checkout.data[0].id)
 				this.checkout = await state.data.getCheckout()
 				this.store_config = await state.data.getConfig()
-				// const storeConfig = await state.data.getConfig()
 				// this.$store.dispatch('setStoreConfig', this.store_config)
-				Object.keys(this.checkout.cart.lineItems).forEach(i => {
-					this.cartItems += this.checkout.cart.lineItems[i].length
-				})
+				this.$store.dispatch('setCheckout', this.checkout)
 
-				const consignments = this.checkout.consignments
+				this.checkout.cart.lineItems.physicalItems.forEach(i => this.cartItems += i.quantity) 
+				this.$store.dispatch('setCartItemTotal', this.cartItems)
 
-				if (consignments.length) {
+				if (this.checkout.consignments[0].selectedShippingOption) {
 					this.$store.dispatch('setPanel', 3)
+				} else {
+					this.$store.dispatch('setPanel', 1)
 				}
-				// if (consignments.length && consignmentss[0].shippingAddress) {
-				// 	this.changePanel(3)
-				// }
-				// if (!consignments.length) {
-				// 	this.changePanel(0)
-				// }
 
 				this.service.subscribe(state => {
 					this.checkout = state.data.getCheckout()
+					this.$store.dispatch('setCheckout', this.checkout)
 				})
 			} catch (err) {
 				console.log(err)
@@ -120,5 +99,4 @@ export default {
 	min-height: 15.38462rem;
 	padding: 0 1.5rem 7.5rem;
 }
-
 </style>

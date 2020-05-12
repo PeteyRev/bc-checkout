@@ -9,31 +9,43 @@
 				label="Payment Method"
 				required
 			>
-				<v-list elevation>
-					<div v-for="(option, index) of paymentOptions" :key="option.id">
-						<v-divider></v-divider>
-						<v-list-item ripple="{ center: true }">
-							<v-list-item-content>
-								<v-radio :label="option.config.displayName" :value="option.id"></v-radio>
-							</v-list-item-content>
-							<div class="d-flex">
-								<component
-									v-for="(card, cardIndex) of option.supportedCards"
-									class="card-icon"
-									:key="cardIndex"
-									:is="card"
-								/>
-							</div>
+				<v-list elevation="2" rounded>
 
-						</v-list-item>
+					<v-list-item-group color="primary">
+						<div v-for="(option, index) of paymentOptions" :key="option.id">
+							<v-list-item ripple="{ center: true }" :input-value="option.id">
+								<v-list-item-content>
+									<div class="d-flex">
+										<v-radio :label="option.config.displayName" :value="option.id"></v-radio>
+										<!-- <v-img v-if="option.logoUrl" :src="option.logoUrl" contain width="105" height="25"></v-img> -->
+									</div>
+								</v-list-item-content>
+
+								<div class="d-flex">
+									<component
+										v-for="(card, cardIndex) of option.supportedCards"
+										class="card-icon"
+										:key="cardIndex"
+										:is="card"
+									/>
+								</div>
+							</v-list-item>
 							<CreditCard
 								v-if="option.method === 'credit-card' || option.method === 'zzzblackhole'"
 								v-show="paymentMethod === option.id"
 							/>
-						<v-divider v-if="index === paymentOptions.length - 1"></v-divider>
-					</div>
+							<v-divider v-if="index !== paymentOptions.length - 1"></v-divider>
+						</div>
+					</v-list-item-group>
 				</v-list>
 			</v-radio-group>
+
+			<v-checkbox
+				v-if="store_config.checkoutSettings.enableTermsAndConditions"
+				v-model="termsAndConditions"
+				label="Terms and Conditions"
+			></v-checkbox>
+
 			<v-btn color="primary" block large :disabled="!paymentMethod" @click="submitOrder">Place Order</v-btn>
 		</v-expansion-panel-content>
 	</v-expansion-panel>
@@ -67,6 +79,7 @@ export default {
 			title: 'Payment',
 			step: 3
 		},
+		termsAndConditions: false,
 		paymentMethod: null,
 		paymentOptions: [],
 		paymentData: {
@@ -84,16 +97,19 @@ export default {
 	},
 	methods: {
 		async submitOrder() {
+			this.isLoading = true
 			await this.service.initializePayment({ methodId: this.paymentMethod })
 			const payment = {
 				methodId: this.paymentMethod,
 				paymentData: this.paymentData
 			}
 			const state = await this.service.submitOrder({ payment })
-
+			await this.service.deinitializePayment({
+				methodId: this.paymentMethod
+			})
 			console.log(state.data.getOrder())
 
-			window.location.assign('/order-confirmation')
+			window.location.assign('/checkout/order-confirmation')
 		}
 	}
 }

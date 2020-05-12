@@ -4,7 +4,8 @@
     <a href="#facetedSearch-navList" role="button" class="facetedSearch-toggle toggleLink" data-collapsible>
         <span class="facetedSearch-toggle-text">
             {{#if facets.length '>' 2}}
-                {{lang 'search.faceted.browse-by'}} {{ join (pluck facets 'title') ', ' limit=2 }} &amp; {{ toLowerCase (lang 'search.faceted.more') }}
+                {{lang 'search.faceted.browse-by'}} {{ join (pluck facets 'title') ', ' limit=2 }} &amp;
+                {{ toLowerCase (lang 'search.faceted.more') }}
             {{/if}}
 
             {{#if facets.length '<=' 2}}
@@ -17,7 +18,8 @@
                 {{lang 'search.faceted.hide-filters'}}
 
                 <i class="icon" aria-hidden="true">
-                    <svg><use xlink:href="#icon-keyboard-arrow-up"/></svg>
+                    <svg>
+                        <use href="#icon-keyboard-arrow-up" /></svg>
                 </i>
             </span>
 
@@ -25,16 +27,15 @@
                 {{lang 'search.faceted.show-filters'}}
 
                 <i class="icon" aria-hidden="true">
-                    <svg><use xlink:href="#icon-keyboard-arrow-down"/></svg>
+                    <svg>
+                        <use href="#icon-keyboard-arrow-down" /></svg>
                 </i>
             </span>
         </span>
     </a>
 
     {{#any facets visible=true}}
-        <div
-            id="facetedSearch-navList"
-            class="facetedSearch-navList blocker-container">
+        <div id="facetedSearch-navList" class="facetedSearch-navList blocker-container">
             <div class="accordion accordion--navList">
                 {{#each facets}}
                     {{#if visible}}

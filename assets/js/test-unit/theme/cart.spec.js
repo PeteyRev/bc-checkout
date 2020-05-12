@@ -5,30 +5,30 @@ import Cart from '../../theme/cart.js';
 var dataSpy;
 var UpdateSpy;
 var c = new Cart();
-beforeEach(function() {
-	UpdateSpy = spyOn(utils.api.cart, 'itemUpdate');
+beforeEach(function () {
+    UpdateSpy = spyOn(utils.api.cart, 'itemUpdate');
 
-	dataSpy = function(requestedAction = null) {
-		spyOn(jQuery.fn, 'data').and.callFake(function() {
-		    var param = arguments[0];
-		    switch (param) {
-		    case 'action':
-		    	return requestedAction;
-		    case 'cartItemid':
-		    	return '11111';
-		    case 'quantityMax':
-		    	return 5;
-		    case 'quantityMin':
-		    	return 1;
-		    case 'quantityMinError':
-		    	return 'min error';
-		    case 'quantityMaxError':
-		    	return ' max error';
-		    default:
-		    	return null;
-		    }
-		})
-	};
+    dataSpy = function (requestedAction = null) {
+        spyOn(jQuery.fn, 'data').and.callFake(function () {
+            var param = arguments[0];
+            switch (param) {
+                case 'action':
+                    return requestedAction;
+                case 'cartItemid':
+                    return '11111';
+                case 'quantityMax':
+                    return 5;
+                case 'quantityMin':
+                    return 1;
+                case 'quantityMinError':
+                    return 'min error';
+                case 'quantityMaxError':
+                    return ' max error';
+                default:
+                    return null;
+            }
+        })
+    };
 });
 
 var $dom = $('<table class="cart" data-cart-quantity="2">\
@@ -81,7 +81,7 @@ var $dom = $('<table class="cart" data-cart-quantity="2">\
                     <span class="cart-item-label">Total</span>\
                         <strong class="cart-item-value ">$98.00</strong>\
                         <a class="cart-remove icon" data-cart-itemid="item-id" href="#" data-confirm-delete="Are you sure you want to delete this item?">\
-                            <svg><use xmlns:xlink="www.eee.com" xlink:href="#icon-close"></use></svg>\
+                            <svg><use xmlns:xlink="www.eee.com" href="#icon-close"></use></svg>\
                         </a>\
                 </td>\
             </tr>\
@@ -91,32 +91,32 @@ var $dom = $('<table class="cart" data-cart-quantity="2">\
 c.onReady();
 
 describe('cartUpdate', () => {
-    it('should INCRIMENT qty', () => {	
-		dataSpy
-		dataSpy('inc');
-		spyOn(jQuery.fn, 'val').and.returnValue(2);
-		c.cartUpdate($dom);
-		
-		expect(UpdateSpy).toHaveBeenCalledWith('11111', 3, jasmine.any(Function));  
-	});
+    it('should INCRIMENT qty', () => {
+        dataSpy
+        dataSpy('inc');
+        spyOn(jQuery.fn, 'val').and.returnValue(2);
+        c.cartUpdate($dom);
 
-    it('should DECREMENT qty', () => {	
-		dataSpy
-		dataSpy('dec');
-		spyOn(jQuery.fn, 'val').and.returnValue(2);
-		c.cartUpdate($dom);
-		
-		expect(UpdateSpy).toHaveBeenCalledWith('11111', 1, jasmine.any(Function));  
-	});
+        expect(UpdateSpy).toHaveBeenCalledWith('11111', 3, jasmine.any(Function));
+    });
+
+    it('should DECREMENT qty', () => {
+        dataSpy
+        dataSpy('dec');
+        spyOn(jQuery.fn, 'val').and.returnValue(2);
+        c.cartUpdate($dom);
+
+        expect(UpdateSpy).toHaveBeenCalledWith('11111', 1, jasmine.any(Function));
+    });
 });
 
 describe('cartUpdateQtyTextChange', () => {
-    it('should CHANGE qty completly based on the cart-item-qty-input', () => {	
-		dataSpy
-		dataSpy('manualQtyChange');
-		spyOn(jQuery.fn, 'val').and.returnValue(5, 2);
-		c.cartUpdateQtyTextChange($dom);
-		
-		expect(UpdateSpy).toHaveBeenCalledWith('11111', 5, jasmine.any(Function));  
-	});
+    it('should CHANGE qty completly based on the cart-item-qty-input', () => {
+        dataSpy
+        dataSpy('manualQtyChange');
+        spyOn(jQuery.fn, 'val').and.returnValue(5, 2);
+        c.cartUpdateQtyTextChange($dom);
+
+        expect(UpdateSpy).toHaveBeenCalledWith('11111', 5, jasmine.any(Function));
+    });
 });

@@ -48,7 +48,10 @@
                     {{forms.payment_method.provider_name}}
                     <span class="paymentMethodForm-cards">
                         {{#each ../theme_settings.supported_card_type_icons}}
-                            <img class="paymentMethodForm-cards-icon" src="{{cdn (concat (concat 'img/payment-methods/' this) '.svg')}}" alt="{{lang (concat 'account.payment_methods.card_types.' this)}}" title="{{lang (concat 'account.payment_methods.card_types.' this)}}">
+                            <img class="paymentMethodForm-cards-icon"
+                                src="{{cdn (concat (concat 'img/payment-methods/' this) '.svg')}}"
+                                alt="{{lang (concat 'account.payment_methods.card_types.' this)}}"
+                                title="{{lang (concat 'account.payment_methods.card_types.' this)}}">
                         {{/each}}
                     </span>
                 </p>
@@ -57,7 +60,7 @@
                         <div class="paymentMethodForm-inputs">
                             {{> components/common/forms/text id="credit_card_number" name="credit_card_number" label=(lang 'account.payment_methods.credit_card_number')}}
                             <svg class="paymentMethodForm-inputs-icon icon">
-                                <use xlink:href="#icon-lock" />
+                                <use href="#icon-lock" />
                             </svg>
                         </div>
                         <div class="paymentMethodForm-inputs">
@@ -71,13 +74,15 @@
                         <div class="paymentMethodForm-inputs">
                             {{> components/common/forms/text id="cvv" name="cvv" label=(lang 'account.payment_methods.cvv')}}
                             <svg class="paymentMethodForm-inputs-icon icon">
-                                <use xlink:href="#icon-lock" />
+                                <use href="#icon-lock" />
                             </svg>
                         </div>
                     </div>
                     <div class="form-field">
-                        <input type="checkbox" name="default_instrument" id="default_instrument" data-label="{{lang 'forms.payment_methods.default_instrument'}}" class="form-checkbox">
-                        <label class="form-label" for="default_instrument">{{lang 'forms.payment_methods.default_instrument'}}</label>
+                        <input type="checkbox" name="default_instrument" id="default_instrument"
+                            data-label="{{lang 'forms.payment_methods.default_instrument'}}" class="form-checkbox">
+                        <label class="form-label"
+                            for="default_instrument">{{lang 'forms.payment_methods.default_instrument'}}</label>
                     </div>
                 </fieldset>
             </div>
@@ -99,7 +104,8 @@
                 </div>
             </fieldset>
             <div class="form-actions">
-                <input type="submit" class="button button--primary" value="{{lang 'forms.payment_methods.submit_value'}}">
+                <input type="submit" class="button button--primary"
+                    value="{{lang 'forms.payment_methods.submit_value'}}">
                 <a href="{{urls.account.payment_methods.all}}" class="button">{{lang 'common.cancel'}}</a>
                 {{inject 'required' (lang 'common.required')}}
                 {{inject 'state_error' (lang 'errors.state_error')}}

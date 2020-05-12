@@ -37,10 +37,10 @@
 					<v-text-field
 						v-model="ccCvv"
 						:rules="[rules.required, rules.cvvNumber]"
-						type="number"
 						label="CVV"
 						required
 					></v-text-field>
+					<p style="display:none">For VISA and Mastercard, the CVV is a three-digit code printed on the back. For American Express it is the four-digit code printed on the front. The CVV is a security measure to ensure that you are in possession of the card.</p>
 				</v-col>
 			</v-row>
 		</v-form>
@@ -49,7 +49,6 @@
 
 <script>
 import validCard from 'card-validator'
-
 
 export default {
 	name: 'CreditCard',
@@ -85,11 +84,18 @@ export default {
 			}
 		},
 		validateForm() {
-			console.log(this.$refs.form.validate())
 			if (this.$refs.form.validate()) {
-				console.log('good')
+				const paymentData = {
+					ccExpiry: this.ccExpiry,
+					ccName: this.ccName,
+					ccNumber: this.ccNumber,
+					ccType: this.ccType,
+					ccCvv: this.ccCvv
+				}
+				this.$emit('sendPaymentData', paymentData)
 			}
 		}
 	}
 }
 </script>
+

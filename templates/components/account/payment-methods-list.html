@@ -18,18 +18,29 @@
                                     {{!-- If credit card STARTS --}}
                                     {{#if brand}}
                                         {{#inArray ../../../../../theme_settings.supported_card_type_icons brand}}
-                                            <img class="methodHeader-icon" src="{{cdn (concat (concat 'img/payment-methods/' brand) '.svg')}}" alt="{{lang (concat 'account.payment_methods.card_types.' brand)}}" title="{{lang (concat 'account.payment_methods.card_types.' brand)}}">
+                                            <img class="methodHeader-icon"
+                                                src="{{cdn (concat (concat 'img/payment-methods/' brand) '.svg')}}"
+                                                alt="{{lang (concat 'account.payment_methods.card_types.' brand)}}"
+                                                title="{{lang (concat 'account.payment_methods.card_types.' brand)}}">
                                         {{/inArray}}
-                                        <span class="methodHeader-brand">{{lang (concat 'account.payment_methods.card_types.' brand)}} {{lang 'account.payment_methods.card_ending_in' last_four=last_4}}</span>
+                                        <span
+                                            class="methodHeader-brand">{{lang (concat 'account.payment_methods.card_types.' brand)}}
+                                            {{lang 'account.payment_methods.card_ending_in' last_four=last_4}}</span>
                                     {{else}}
-                                        <img class="methodHeader-icon" src="{{cdn 'img/payment-methods/card.svg'}}" alt="{{lang 'account.payment_methods.card_types.credit_card'}}" title="{{lang 'account.payment_methods.card_types.credit_card'}}">
-                                        <span class="methodHeader-brand">{{lang 'account.payment_methods.card_types.credit_card'}} {{lang 'account.payment_methods.card_ending_in' last_four=last_4}}</span>
+                                        <img class="methodHeader-icon" src="{{cdn 'img/payment-methods/card.svg'}}"
+                                            alt="{{lang 'account.payment_methods.card_types.credit_card'}}"
+                                            title="{{lang 'account.payment_methods.card_types.credit_card'}}">
+                                        <span
+                                            class="methodHeader-brand">{{lang 'account.payment_methods.card_types.credit_card'}}
+                                            {{lang 'account.payment_methods.card_ending_in' last_four=last_4}}</span>
                                     {{/if}}
                                     {{!-- If credit card ENDS --}}
                                 {{/if}}
                                 {{#if type '===' 'stored_paypal_account'}}
                                     {{!-- If paypal STARTS --}}
-                                    <img class="methodHeader-icon" src="{{cdn 'img/payment-methods/paypal.svg'}}" alt="{{lang 'account.payment_methods.paypal'}}" title="{{lang 'account.payment_methods.paypal'}}">
+                                    <img class="methodHeader-icon" src="{{cdn 'img/payment-methods/paypal.svg'}}"
+                                        alt="{{lang 'account.payment_methods.paypal'}}"
+                                        title="{{lang 'account.payment_methods.paypal'}}">
                                     <span class="methodHeader-brand">
                                         {{email}}
                                     </span>
@@ -37,11 +48,12 @@
                                 {{/if}}
                                 <div class="methodHeader-meta">
                                     {{#if expiry_year}}
-                                        <span class="methodHeader-expiry">{{lang 'account.payment_methods.card_expiry' month=expiry_month year=expiry_year}}</span>
+                                        <span
+                                            class="methodHeader-expiry">{{lang 'account.payment_methods.card_expiry' month=expiry_month year=expiry_year}}</span>
                                     {{/if}}
                                     {{#if is_default}}
                                         <svg class="methodHeader-default">
-                                            <use xlink:href="#icon-star" />
+                                            <use href="#icon-star" />
                                         </svg>
                                     {{/if}}
                                 </div>
@@ -51,13 +63,15 @@
                             <div class="paymentMethod-row">
                                 {{!-- If there is an address STARTS --}}
                                 <p class="methodDetails">
-                                    <span class="methodDetails-label">{{lang 'account.payment_methods.billing_address'}}:</span>
+                                    <span
+                                        class="methodDetails-label">{{lang 'account.payment_methods.billing_address'}}:</span>
                                     <span class="methodDetails-description">
                                         <span>{{billing_address.address1}}, </span>
                                         {{#if billing_address.address2}}
                                             <span>{{billing_address.address2}}, </span>
                                         {{/if}}
-                                        <span>{{billing_address.city}}, {{billing_address.state}} {{billing_address.zip}} {{billing_address.country}}</span>
+                                        <span>{{billing_address.city}}, {{billing_address.state}}
+                                            {{billing_address.zip}} {{billing_address.country}}</span>
                                     </span>
                                 </p>
                                 {{!-- If there is an address ENDS --}}
@@ -65,12 +79,15 @@
                             </div>
                         {{/if}}
                         <div class="paymentMethod-row">
-                            <form action="{{delete_url}}" method="post" data-delete-payment-method="{{lang 'forms.payment_methods.confirm_delete'}}">
+                            <form action="{{delete_url}}" method="post"
+                                data-delete-payment-method="{{lang 'forms.payment_methods.confirm_delete'}}">
                                 {{#if edit_url}}
-                                    <a class="button button--primary button--small methodActions-button" href="{{edit_url}}">{{lang 'common.edit' }}</a>
+                                    <a class="button button--primary button--small methodActions-button"
+                                        href="{{edit_url}}">{{lang 'common.edit' }}</a>
                                 {{/if}}
                                 {{#if delete_url}}
-                                    <button type="submit" class="button button--small methodActions-button">{{lang 'common.delete' }}</button>
+                                    <button type="submit"
+                                        class="button button--small methodActions-button">{{lang 'common.delete' }}</button>
                                 {{/if}}
                             </form>
                         </div>
@@ -83,7 +100,8 @@
                         <div class="paymentMethod-row">
                             <a class="newPaymentMethod" href="{{add_url}}">
                                 <div class="newPaymentMethod-icon">&plus;</div>
-                                <h5 class="newPaymentMethod-title">{{lang 'account.payment_methods.new_payment_method' }}</h5>
+                                <h5 class="newPaymentMethod-title">
+                                    {{lang 'account.payment_methods.new_payment_method' }}</h5>
                             </a>
                         </div>
                     </div>
@@ -92,4 +110,3 @@
         </div>
     {{/inArray}}
 {{/each}}
-
