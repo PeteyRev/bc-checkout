@@ -3,7 +3,7 @@
 		<PanelHeader :panelInfo="panelInfo" />
 		<v-expansion-panel-content v-if="cartItemTotal">
 			<div
-				v-if="cartItemTotal > 1 && store_config.checkoutSettings.hasMultiShippingEnabled"
+				v-if="cartItemTotal > 1 && isMultiShipping"
 				class="d-flex justify-space-between align-center my-5"
 			>
 				<span v-if="multiShipOrder">Choose where to ship each item</span>
@@ -28,7 +28,7 @@
 			<v-btn
 				color="primary"
 				:loading="loading"
-				:disabled="!consignments.length"
+				:disabled="!shippingSelected"
 				@click="submitShippingStep"
 			>Continue</v-btn>
 		</v-expansion-panel-content>
@@ -56,7 +56,7 @@ export default {
 		isMultiShipping: false,
 		billingSame: true,
 		loading: false,
-		consignments: [{availableShippingOptions: []}],
+		consignments: [],
 		shippingSelected: false
 	}),
 	computed: {
@@ -65,18 +65,17 @@ export default {
 	async created() {
 		const state = await this.service.loadShippingOptions()
 
-
-
 		this.service.subscribe(state => {
 			const checkout = state.data.getCheckout()
-
 			if (!this.isMultiShipping) {
-						if (checkout.consignments.length) {
-			this.consignments = checkout.consignments
-		} else {
-	this.consignments = [{availableShippingOptions: []}]
-		}
-			
+				if (checkout.consignments.length) {
+					this.consignments = checkout.consignments
+					if (this.consignments[0].selectedShippingOption) {
+						this.shippingSelected = true
+					}
+				} else {
+					this.consignments = [{ availableShippingOptions: [] }]
+				}
 			}
 		})
 	},

@@ -70,7 +70,8 @@ export default {
 				this.checkout.cart.lineItems.physicalItems.forEach(i => this.cartItems += i.quantity) 
 				this.$store.dispatch('setCartItemTotal', this.cartItems)
 
-				if (this.checkout.consignments[0].selectedShippingOption) {
+				if (this.checkout.consignments.length) {
+					if (this.checkout.consignments[0].selectedShippingOption)
 					this.$store.dispatch('setPanel', 3)
 				} else {
 					this.$store.dispatch('setPanel', 1)
